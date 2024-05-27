@@ -1,0 +1,70 @@
+@startuml
+
+package "Gestion de la Ville Intelligente" {
+
+  package "Acteurs" {
+    [Citoyen]
+    [Services Municipaux]
+    [Prestataires]
+    [Système]
+  }
+
+  package "Domaines Fonctionnels" {
+  
+    package "Trafic" {
+      [Gestion du Trafic]
+      [Capteurs Trafic]
+    }
+
+    package "Services Publics" {
+      [Gestion des Services]
+      [Réseau d'Eau]
+      [Réseau Électrique]
+    }
+
+    package "Sécurité" {
+      [Gestion de la Sécurité]
+      [Caméras de Surveillance]
+      [Système d'Alarme]
+    }
+
+    package "Services d'Urgence" {
+      [Gestion des Urgences]
+      [Services d'Urgence]
+    }
+
+    package "Communication et Information" {
+      [Systèmes de Communication]
+      [Bases de données des services]
+    }
+  }
+
+  package "Défis et Complexités" {
+    [Intégration de systèmes hétérogènes]
+    [Gestion des données en temps réel]
+    [Sécurité et confidentialité]
+    [Scalabilité et fiabilité]
+    [Interface utilisateur et expérience citoyenne]
+  }
+
+  [Citoyen] --> [Système]
+  [Services Municipaux] --> [Système]
+  [Prestataires] --> [Système]
+
+  [Gestion du Trafic] --> [Capteurs Trafic]
+  [Gestion des Services] --> [Réseau d'Eau]
+  [Gestion des Services] --> [Réseau Électrique]
+  [Gestion de la Sécurité] --> [Caméras de Surveillance]
+  [Gestion de la Sécurité] --> [Système d'Alarme]
+  [Systèmes de Communication] --> [Bases de données des services]
+
+  [Gestion des Urgences] --> [Services d'Urgence]
+
+  [Système] --> [Intégration de systèmes hétérogènes]
+  [Système] --> [Gestion des données en temps réel]
+  [Système] --> [Sécurité et confidentialité]
+  [Système] --> [Scalabilité et fiabilité]
+  [Système] --> [Interface utilisateur et expérience citoyenne]
+}
+
+@enduml
