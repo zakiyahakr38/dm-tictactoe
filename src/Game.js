@@ -1,19 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Board from './Board';
 import Welcome from './Welcome';
 
 function Game() {
-  const [history, setHistory] = useState([{ squares: Array(9).fill(null) }]);
+  const [history, setHistory] = useState([{ squares: Array(9).fill(null), move: null }]);
   const [stepNumber, setStepNumber] = useState(0);
   const [xIsNext, setXIsNext] = useState(true);
   const [player1, setPlayer1] = useState('');
   const [player2, setPlayer2] = useState('');
   const [scores, setScores] = useState({ player1: 0, player2: 0 });
   const [isGameActive, setIsGameActive] = useState(false);
+  const [gameFinished, setGameFinished] = useState(false);
 
   const current = history[stepNumber];
   const winner = calculateWinner(current.squares);
   const winningSquares = winner ? winner.line : [];
+
+  useEffect(() => {
+    if (winner && !gameFinished) {
+      if (winner.player === 'X') {
+        setScores((prevScores) => ({ ...prevScores, player1: prevScores.player1 + 1 }));
+      } else {
+        setScores((prevScores) => ({ ...prevScores, player2: prevScores.player2 + 1 }));
+      }
+      setGameFinished(true);
+    }
+  }, [winner, gameFinished]);
 
   const handleClick = (i) => {
     const historyPoint = history.slice(0, stepNumber + 1);
@@ -22,9 +34,10 @@ function Game() {
     if (winner || squares[i]) return;
 
     squares[i] = xIsNext ? 'X' : 'O';
-    setHistory(history.concat([{ squares: squares }]));
+    setHistory(history.concat([{ squares: squares, move: i }]));
     setStepNumber(historyPoint.length);
     setXIsNext(!xIsNext);
+    setGameFinished(false);
   };
 
   const handleStart = (p1, p2) => {
@@ -35,9 +48,15 @@ function Game() {
 
   const handleQuit = () => {
     setIsGameActive(false);
-    setHistory([{ squares: Array(9).fill(null) }]);
+    setHistory([{ squares: Array(9).fill(null), move: null }]);
     setStepNumber(0);
     setXIsNext(true);
+    setGameFinished(false);
+  };
+
+  const jumpTo = (step) => {
+    setStepNumber(step);
+    setXIsNext(step % 2 === 0);
   };
 
   const getStatus = () => {
@@ -50,8 +69,19 @@ function Game() {
     }
   };
 
+  const moves = history.map((step, move) => {
+    const desc = move ?
+      `Go to move #${move} (${Math.floor(step.move / 3)}, ${step.move % 3})` :
+      'Go to game start';
+    return (
+      <li key={move}>
+        <button onClick={() => jumpTo(move)}>{desc}</button>
+      </li>
+    );
+  });
+
   return isGameActive ? (
-    <div>
+    <div className="game">
       <div className="game-board">
         <Board
           squares={current.squares}
@@ -63,6 +93,7 @@ function Game() {
         <div>{getStatus()}</div>
         <div>Scores: {player1} {scores.player1} - {player2} {scores.player2}</div>
         <button onClick={handleQuit}>Quitter</button>
+        <ol>{moves}</ol>
       </div>
     </div>
   ) : (
