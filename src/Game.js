@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Board from './Board';
 import Welcome from './Welcome';
+import { Container, Box, Typography, Button, Grid, Alert } from '@mui/material';
 
 function Game() {
   const [history, setHistory] = useState([{ squares: Array(9).fill(null), move: null }]);
@@ -44,6 +45,10 @@ function Game() {
     setPlayer1(p1);
     setPlayer2(p2);
     setIsGameActive(true);
+    setHistory([{ squares: Array(9).fill(null), move: null }]);
+    setStepNumber(0);
+    setXIsNext(true);
+    setGameFinished(false);
   };
 
   const handleQuit = () => {
@@ -57,45 +62,58 @@ function Game() {
   const jumpTo = (step) => {
     setStepNumber(step);
     setXIsNext(step % 2 === 0);
+    setGameFinished(false); // Réinitialiser les touches de l'ancienne partie
   };
 
   const getStatus = () => {
     if (winner) {
       const winnerName = winner.player === 'X' ? player1 : player2;
-      return `Winner: ${winnerName}`;
+      return `Gagnant : ${winnerName}`;
     } else {
       const nextPlayerName = xIsNext ? player1 : player2;
-      return `Next player: ${nextPlayerName}`;
+      return `Prochain joueur : ${nextPlayerName}`;
     }
   };
 
   const moves = history.map((step, move) => {
     const desc = move ?
-      `Go to move #${move} (${Math.floor(step.move / 3)}, ${step.move % 3})` :
-      'Go to game start';
+      `Aller au coup #${move} (${Math.floor(step.move / 3)}, ${step.move % 3})` :
+      'Revenir au début';
     return (
       <li key={move}>
-        <button onClick={() => jumpTo(move)}>{desc}</button>
+        <Button onClick={() => jumpTo(move)}>{desc}</Button>
       </li>
     );
   });
 
   return isGameActive ? (
-    <div className="game">
-      <div className="game-board">
-        <Board
-          squares={current.squares}
-          onClick={handleClick}
-          winningSquares={winningSquares}
-        />
-      </div>
-      <div className="game-info">
-        <div>{getStatus()}</div>
-        <div>Scores: {player1} {scores.player1} - {player2} {scores.player2}</div>
-        <button onClick={handleQuit}>Quitter</button>
-        <ol>{moves}</ol>
-      </div>
-    </div>
+    <Container>
+      <Box sx={{ mt: 4, p: 3, boxShadow: 3, borderRadius: 2 }}>
+        <Grid container spacing={2}>
+          <Grid item xs={12} md={8}>
+            <Box className="game-board">
+              <Board
+                squares={current.squares}
+                onClick={handleClick}
+                winningSquares={winningSquares}
+              />
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Box className="game-info">
+              <Typography variant="h5">{getStatus()}</Typography>
+              <Typography variant="h6">
+                Scores: {player1} {scores.player1} - {player2} {scores.player2}
+              </Typography>
+              <Button variant="contained" color="secondary" onClick={handleQuit}>
+                Quitter
+              </Button>
+              <ol>{moves}</ol>
+            </Box>
+          </Grid>
+        </Grid>
+      </Box>
+    </Container>
   ) : (
     <Welcome onStart={handleStart} />
   );

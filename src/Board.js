@@ -1,5 +1,6 @@
 import React from 'react';
 import Square from './Square';
+import { Box, Grid } from '@mui/material';
 
 function Board(props) {
   const renderSquare = (i) => {
@@ -21,10 +22,18 @@ function Board(props) {
     for (let col = 0; col < boardSize; col++) {
       boardRow.push(renderSquare(row * boardSize + col));
     }
-    board.push(<div key={row} className="board-row">{boardRow}</div>);
+    board.push(
+      <Grid container key={row} justifyContent="center">
+        {boardRow}
+      </Grid>
+    );
   }
 
-  return <div>{board}</div>;
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      {board}
+    </Box>
+  );
 }
 
 export default Board;
